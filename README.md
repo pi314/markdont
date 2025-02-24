@@ -7,6 +7,12 @@ A vim plugin derived from https://github.com/pi314/pi314.rst.vim for Markdown.
 
 ### Mappings
 
+To disable default mappings, set `g:markdont_disable_default_key_mappings` to `v:true`:
+
+```vim
+let g:markdont_disable_default_key_mappings = v:true
+```
+
 *   Headings (sections)
 
     -   `tj` / `tk` jumps down / up by one markdown section
