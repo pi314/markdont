@@ -61,3 +61,41 @@ if !exists('g:markdont_disable_default_key_mappings') || !g:markdont_disable_def
     nnoremap <buffer> <silent> cc <cmd>call markdont#cc()<CR>A
     nnoremap <buffer> <silent> S <cmd>call markdont#cc()<CR>A
 endif
+
+
+if exists('g:markdont_disable_default_key_mappings') && g:markdont_disable_default_key_mappings
+    nunmap <buffer> <leader>b
+    iunmap <buffer> <leader>b
+    vunmap <buffer> <leader>b
+
+    nunmap <buffer> <leader>B
+    iunmap <buffer> <leader>B
+    vunmap <buffer> <leader>B
+
+    iunmap <buffer> <CR>
+
+    nunmap <buffer> o
+
+    nunmap <buffer> ^
+    vunmap <buffer> ^
+
+    nunmap <buffer> I
+    nunmap <buffer> J
+
+    nunmap <buffer> >
+    nunmap <buffer> <
+    vunmap <buffer> >
+    vunmap <buffer> <
+
+    iunmap <buffer> <TAB>
+    iunmap <buffer> <S-TAB>
+
+    nunmap <buffer> tj
+    vunmap <buffer> tj
+
+    nunmap <buffer> tk
+    vunmap <buffer> tk
+
+    nunmap <buffer> cc
+    nunmap <buffer> S
+endif
