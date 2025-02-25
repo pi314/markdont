@@ -333,18 +333,31 @@ endfunction " }}}
 
 
 function! markdont#carriage_return () " {{{
-    let line = s:parseline('.')
+    let line = getline('.')
     let col = col('.')
-    let right = line['origin'][col-1:]
-    let new_line = line['indent'] . right
-    let line['text'] = line['text'][:-strlen(right)-1]
-
-    if line['text'] == ''
-        call setline(line['linenum'], '')
+    if col == 1
+        let left = ''
+        let right = line
+    else
+        let left = line[:col-2]
+        let right = line[col-1:]
     endif
-    call append(line('.'), new_line)
-    call s:writeline(line)
-    call cursor(line('.') + 1, strlen(line['indent']) + 1)
+
+    let indent = ''
+    let m = matchlist(left, '\v^( *)(.*)$')
+    if m != []
+        let indent = m[1]
+    endif
+
+    call setline('.', left)
+    call append('.', indent . right)
+
+    if left =~ '\v^ *$'
+        call setline('.', '')
+    endif
+
+    let line = s:parseline('.')
+    call cursor(line('.') + 1, strlen(indent) + 1)
 
     if has_key(line, 'btype')
         call markdont#set_bullet()
