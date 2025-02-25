@@ -143,6 +143,7 @@ function! s:parseline (linenum) " {{{
     if m != []
         let ret['btype'] = s:UL_BULLET
         let ret['indent'] = m[1]
+        let ret['bsymbol'] = m[2]
         let ret['bspace'] = m[3]
         let ret['text'] = m[4]
         return ret
@@ -153,6 +154,7 @@ function! s:parseline (linenum) " {{{
     if m != []
         let ret['btype'] = s:OL_BULLET
         let ret['indent'] = m[1]
+        let ret['bsymbol'] = m[2] . m[3]
         let ret['bnum'] = str2nr(m[2])
         let ret['bformat'] = '#' . m[3]
         let ret['bspace'] = m[4]
@@ -332,31 +334,18 @@ endfunction " }}}
 
 function! markdont#carriage_return () " {{{
     let line = s:parseline('.')
-    if !has_key(line, 'btype')
-        " current line is not a list item
+    let col = col('.')
+    let right = line['origin'][col-1:]
+    let new_line = line['indent'] . right
+    let line['text'] = line['text'][:-strlen(right)-1]
 
-        " here comes a literal block
-        if s:endswith(line['origin'], '::')
-            return "\<CR>\<CR>". repeat(' ', &softtabstop)
-        endif
-        return "\<CR>"
+    call append(line('.'), new_line)
+    call s:writeline(line)
+    call cursor(line('.') + 1, strlen(line['indent']) + 1)
+
+    if has_key(line, 'btype')
+        call markdont#set_bullet()
     endif
-
-    if col('.') == strlen(line['origin']) - strlen(line['text']) + 1
-        " line['text'] == '' or cursor is at text start
-        " Just prepend an empty line
-        call append(line('.') - 1, '')
-        return ""
-    endif
-
-    " here comes a literal block
-    if s:endswith(line['origin'], '::')
-        return "\<CR>\<CR>\<ESC>d0i" .
-            \repeat(' ',
-            \s:vwidth(line['origin']) - s:vwidth(line['text']) + &softtabstop)
-    endif
-
-    return "=\<LEFT>\<CR>\<ESC>d0i" . line['indent'] ."\<ESC>:call markdont#set_bullet()\<CR>^Ws"
 endfunction " }}}
 
 
@@ -376,10 +365,6 @@ endfunction " }}}
 
 
 function! markdont#move_cursor_to_next_heading () " {{{
-    " if a:0 == 1 && a:1 ==# 'v'
-    "     normal! gv
-    " endif
-
     let thisline = getline('.')
     let nextline = (line('.') > line('$')) ? '' : getline(line('.') + 1)
 
@@ -398,7 +383,7 @@ function! markdont#move_cursor_to_next_heading () " {{{
         endif
         if s:is_heading_underline(line)
             let lastline = getline(row - 1)
-            if lastline !=# ''
+            if lastline != ''
                 call cursor(row - 1, 1)
                 return
             endif
@@ -408,7 +393,7 @@ function! markdont#move_cursor_to_next_heading () " {{{
 endfunction " }}}
 
 
-function! markdont#move_cursor_to_prev_heading (...) range " {{{
+function! markdont#move_cursor_to_prev_heading () range " {{{
     let row = line('.') - 1
     while row > 0
         let line = getline(row)
@@ -418,7 +403,7 @@ function! markdont#move_cursor_to_prev_heading (...) range " {{{
         endif
         if s:is_heading_underline(line)
             let lastline = getline(row - 1)
-            if lastline !=# ''
+            if lastline != ''
                 call cursor(row - 1, 1)
                 return
             endif
