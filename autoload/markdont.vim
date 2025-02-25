@@ -339,6 +339,9 @@ function! markdont#carriage_return () " {{{
     let new_line = line['indent'] . right
     let line['text'] = line['text'][:-strlen(right)-1]
 
+    if line['text'] == ''
+        call setline(line['linenum'], '')
+    endif
     call append(line('.'), new_line)
     call s:writeline(line)
     call cursor(line('.') + 1, strlen(line['indent']) + 1)
