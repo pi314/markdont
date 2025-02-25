@@ -426,6 +426,15 @@ endfunction " }}}
 function! markdont#increase_indent () range " {{{
     for linenum in range(a:firstline, a:lastline)
         let line = s:parseline(linenum)
+        " Error
+        if line == {}
+            continue
+        endif
+
+        " Skip empty lines
+        if get(line, 'indent', '') == '' && get(line, 'text', '') == ''
+            continue
+        endif
 
         " Search for prev two lines for reference
         let refline = s:parseline(linenum - 1)
@@ -456,6 +465,15 @@ endfunction " }}}
 function! markdont#decrease_indent () range " {{{
     for linenum in range(a:firstline, a:lastline)
         let line = s:parseline(linenum)
+        " Error
+        if line == {}
+            continue
+        endif
+
+        " Skip empty lines
+        if get(line, 'indent', '') == '' && get(line, 'text', '') == ''
+            continue
+        endif
 
         " Search for prev two lines for reference
         let refline = s:parseline(linenum - 1)
