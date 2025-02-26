@@ -7,12 +7,12 @@ inoremap <buffer> <silent> <Plug>Markdont_RemoveBullet <cmd>call markdont#remove
 vnoremap <buffer> <silent> <Plug>Markdont_RemoveBullet :call markdont#remove_bullet()<CR>gv
 
 inoremap <buffer> <silent> <Plug>Markdont_CarriageReturn <cmd>call markdont#carriage_return()<CR>
-nnoremap <buffer> <silent> <Plug>Markdont_CarriageReturn A<cmd>call markdont#carriage_return()<CR>
+nnoremap <buffer> <silent> <Plug>Markdont_o              A<cmd>call markdont#carriage_return()<CR>
 
 nnoremap <buffer> <silent> <Plug>Markdont_MoveCursorToLineStart <cmd>call markdont#move_cursor_to_line_start(1)<CR>
 vnoremap <buffer> <silent> <Plug>Markdont_MoveCursorToLineStart <cmd>call markdont#move_cursor_to_line_start(1)<CR>
 
-inoremap <buffer> <silent> <Plug>Markdont_EditFromLineStart I<cmd>call markdont#move_cursor_to_line_start(0)<CR>
+nnoremap <buffer> <silent> <Plug>Markdont_EditFromLineStart I<cmd>call markdont#move_cursor_to_line_start(0)<CR>
 
 nnoremap <buffer> <silent> <Plug>Markdont_JoinTwoLines :call markdont#join_two_lines()<CR>
 
@@ -21,27 +21,28 @@ nnoremap <buffer> <silent> <Plug>Markdont_DecreaseIndent <cmd>call markdont#decr
 vnoremap <buffer> <silent> <Plug>Markdont_IncreaseIndent :call markdont#increase_indent()<CR>gv
 vnoremap <buffer> <silent> <Plug>Markdont_DecreaseIndent :call markdont#decrease_indent()<CR>gv
 
-nmap <buffer> <silent> <Plug>Markdont_MoveToNextHeading <cmd>call markdont#move_cursor_to_next_heading()<CR>
-vmap <buffer> <silent> <Plug>Markdont_MoveToNextHeading <cmd>call markdont#move_cursor_to_next_heading()<CR>
+nnoremap <buffer> <silent> <Plug>Markdont_MoveToNextHeading <cmd>call markdont#move_cursor_to_next_heading()<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_MoveToNextHeading <cmd>call markdont#move_cursor_to_next_heading()<CR>
 
-nmap <buffer> <silent> <Plug>Markdont_MoveToPrevHeading <cmd>call markdont#move_cursor_to_prev_heading()<CR>
-vmap <buffer> <silent> <Plug>Markdont_MoveToPrevHeading <cmd>call markdont#move_cursor_to_prev_heading()<CR>
+nnoremap <buffer> <silent> <Plug>Markdont_MoveToPrevHeading <cmd>call markdont#move_cursor_to_prev_heading()<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_MoveToPrevHeading <cmd>call markdont#move_cursor_to_prev_heading()<CR>
 
 
 if !exists('g:markdont_disable_default_key_mappings') || !g:markdont_disable_default_key_mappings
-    nmap <buffer> <silent> <leader>b <Plug>Markdont_SetBullet
-    imap <buffer> <silent> <leader>b <Plug>Markdont_SetBullet
-    vmap <buffer> <silent> <leader>b <Plug>Markdont_SetBullet
+    nnoremap <buffer> <silent> <leader>b <Plug>Markdont_SetBullet
+    inoremap <buffer> <silent> <leader>b <Plug>Markdont_SetBullet
+    vnoremap <buffer> <silent> <leader>b <Plug>Markdont_SetBullet
 
-    nmap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
-    imap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
-    vmap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
+    nnoremap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
+    inoremap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
+    vnoremap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
 
-    imap <buffer> <silent> <CR> <Plug>Markdont_CarriageReturn
-    nmap <buffer> <silent> o    <Plug>Markdont_CarriageReturn
+    inoremap <buffer> <silent> <CR> <Plug>Markdont_CarriageReturn
+    nnoremap <buffer> <silent> o    <Plug>Markdont_o
 
-    nmap <buffer> <silent> ^ <Plug>Markdont_MoveCursorToLineStart
-    vmap <buffer> <silent> ^ <Plug>Markdont_MoveCursorToLineStart
+
+    nnoremap <buffer> <silent> ^ <Plug>Markdont_MoveCursorToLineStart
+    vnoremap <buffer> <silent> ^ <Plug>Markdont_MoveCursorToLineStart
 
     nnoremap <buffer> <silent> I <Plug>Markdont_EditFromLineStart
     nnoremap <buffer> <silent> J <Plug>Markdont_JoinTwoLines
@@ -54,11 +55,11 @@ if !exists('g:markdont_disable_default_key_mappings') || !g:markdont_disable_def
     inoremap <buffer> <silent> <TAB> <C-r>=markdont#tab()<CR>
     inoremap <buffer> <silent> <S-TAB> <C-\><C-o>:call markdont#shift_tab()<CR>
 
-    nmap <buffer> <silent> tj <Plug>Markdont_MoveToNextHeading
-    vmap <buffer> <silent> tj <Plug>Markdont_MoveToNextHeading
+    nnoremap <buffer> <silent> tj <Plug>Markdont_MoveToNextHeading
+    vnoremap <buffer> <silent> tj <Plug>Markdont_MoveToNextHeading
 
-    nmap <buffer> <silent> tk <Plug>Markdont_MoveToPrevHeading
-    vmap <buffer> <silent> tk <Plug>Markdont_MoveToPrevHeading
+    nnoremap <buffer> <silent> tk <Plug>Markdont_MoveToPrevHeading
+    vnoremap <buffer> <silent> tk <Plug>Markdont_MoveToPrevHeading
 
     nnoremap <buffer> <silent> cc <cmd>call markdont#cc()<CR>A
     nnoremap <buffer> <silent> S <cmd>call markdont#cc()<CR>A
