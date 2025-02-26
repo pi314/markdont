@@ -118,10 +118,19 @@ endfunction " }}}
 
 function! s:parseline (linenum) " {{{
     " Patterns:
-    " <indent> <bullet> <bspace> <text>
+    "
+    " <indent> <bullet> <text>
+    "   bullet = <btext> space[N]
+    "
+    " [WIP] <indent> <checkbox> <text>
+    "   checkbox = "-" space[1] mark
+    "   mark = "[ ]" | "[X]"
+    "
+    " <heading> space[N] <text>
+    "
     " <indent> <text>
-    " [WIP] <indent> <bullet> <bspace> <checkbox> <cspace> <text>
-    " <heading> <text>
+    "
+    " indent = space[N]
 
     if type(a:linenum) == type(0)
         let linenum = a:linenum
@@ -141,24 +150,26 @@ function! s:parseline (linenum) " {{{
     " bullet -*+
     let m = matchlist(line, '\v^( *)([-*+])( +)(.*)$')
     if m != []
-        let ret['btype'] = s:UL_BULLET
         let ret['indent'] = m[1]
-        let ret['bsymbol'] = m[2]
-        let ret['bspace'] = m[3]
+        let ret['btype'] = s:UL_BULLET
+        let ret['bullet'] = m[2] . m[3]
+        let ret['btext'] = m[2]
         let ret['text'] = m[4]
+        let ret['textleft'] = m[1] . m[2] . m[3]
         return ret
     endif
 
     " bullet 1.  1)
     let m = matchlist(line, '\v^( *)(\d+)(\)|\.)( +)(.*)$')
     if m != []
-        let ret['btype'] = s:OL_BULLET
         let ret['indent'] = m[1]
-        let ret['bsymbol'] = m[2] . m[3]
+        let ret['btype'] = s:OL_BULLET
+        let ret['bullet'] = m[2] . m[3] . m[4]
+        let ret['btext'] = m[2] . m[3]
         let ret['bnum'] = str2nr(m[2])
         let ret['bformat'] = '#' . m[3]
-        let ret['bspace'] = m[4]
         let ret['text'] = m[5]
+        let ret['textleft'] = m[1] . m[2] . m[3] . m[4]
         return ret
     endif
 
@@ -169,6 +180,7 @@ function! s:parseline (linenum) " {{{
         let ret['heading'] = m[1]
         let ret['hspace'] = m[2]
         let ret['text'] = m[3]
+        let ret['textleft'] = m[1] . m[2]
         return ret
     endif
 
@@ -176,6 +188,7 @@ function! s:parseline (linenum) " {{{
     let m = matchlist(line, '\v(^ *)(.*)')
     let ret['indent'] = m[1]
     let ret['text'] = m[2]
+    let ret['textleft'] = m[1]
     return ret
 endfunction " }}}
 
@@ -186,14 +199,14 @@ function! s:align_bullet (line, alignment) " {{{
     endif
 
     let linenum = a:line['linenum'] - 1
-    let meet_empty_line = 0
+    let meet_empty_line = v:false
     let action = 'UNKNOWN'
     while linenum >= 1
         let refline = s:parseline(linenum)
         if refline['text'] == ''
             " empty line
-            if meet_empty_line == 0
-                let meet_empty_line = 1
+            if meet_empty_line == v:false
+                let meet_empty_line = v:true
             else
                 " two consecutive empty lines
                 let action = 'RESET_BULLET'
@@ -202,7 +215,7 @@ function! s:align_bullet (line, alignment) " {{{
 
         elseif has_key(refline, 'btype')
             " a bulleted item
-            let meet_empty_line = 0
+            let meet_empty_line = v:false
             let align_point_1 = s:vwidth(refline['indent'])
             let align_point_2 = s:vwidth(refline['origin']) - s:vwidth(refline['text'])
             if s:vwidth(refline['indent']) == s:vwidth(a:line['indent'])
@@ -253,7 +266,7 @@ function! s:align_bullet (line, alignment) " {{{
 
         else
             " normal line
-            let meet_empty_line = 0
+            let meet_empty_line = v:false
             if s:vwidth(refline['indent']) <= s:vwidth(a:line['indent'])
                 " same or lesser indent, reset bullet
                 let action = 'RESET_BULLET'
