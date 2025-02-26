@@ -9,6 +9,8 @@ vnoremap <buffer> <silent> <Plug>Markdont_RemoveBullet :call markdont#remove_bul
 inoremap <buffer> <silent> <Plug>Markdont_CarriageReturn <cmd>call markdont#carriage_return()<CR>
 nnoremap <buffer> <silent> <Plug>Markdont_o              A<cmd>call markdont#carriage_return()<CR>
 
+inoremap <buffer> <silent> <Plug>Markdont_Backspace <C-r>=markdont#backspace()<CR>
+
 nnoremap <buffer> <silent> <Plug>Markdont_MoveCursorToLineStart <cmd>call markdont#move_cursor_to_line_start(1)<CR>
 vnoremap <buffer> <silent> <Plug>Markdont_MoveCursorToLineStart <cmd>call markdont#move_cursor_to_line_start(1)<CR>
 
@@ -40,6 +42,7 @@ if !exists('g:markdont_disable_default_key_mappings') || !g:markdont_disable_def
     inoremap <buffer> <silent> <CR> <Plug>Markdont_CarriageReturn
     nnoremap <buffer> <silent> o    <Plug>Markdont_o
 
+    inoremap <buffer> <silent> <BS> <Plug>Markdont_Backspace
 
     nnoremap <buffer> <silent> ^ <Plug>Markdont_MoveCursorToLineStart
     vnoremap <buffer> <silent> ^ <Plug>Markdont_MoveCursorToLineStart

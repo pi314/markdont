@@ -365,6 +365,20 @@ function! markdont#carriage_return () " {{{
 endfunction " }}}
 
 
+function! markdont#backspace () " {{{
+    let line = s:parseline('.')
+
+    if has_key(line, 'btype') && strlen(line['textleft']) + 1 == col('.')
+        unlet line['btype']
+        let line['indent'] = repeat(' ', strlen(line['textleft']))
+        call s:writeline(line)
+        return ''
+    endif
+
+    return "\<backspace>"
+endfunction " }}}
+
+
 function! markdont#move_cursor_to_line_start (toggle) " {{{
     let line = s:parseline('.')
     let logical_line_start = strlen(line['origin']) - strlen(line['text']) + 1
