@@ -295,6 +295,47 @@ function! s:align_bullet (line, alignment) " {{{
     endif
 endfunction " }}}
 
+
+function! s:search_refline (line) " {{{
+    " Search for previous lines for reference
+    let refline = {}
+    let meet_empty_line = v:false
+    for i in range(a:line['linenum'] - 1, 1, -1)
+        let refline = s:parseline(i)
+        if refline == {}
+            break
+        endif
+
+        " Skip for two consecutive empty lines
+        if refline['text'] == ''
+            if meet_empty_line
+                break
+            else
+                let meet_empty_line = v:true
+            endif
+        else
+            let meet_empty_line = v:false
+        endif
+
+        let baseline = strlen(a:line['textleft'])
+        let ref_baseline = strlen(refline['textleft'])
+
+        if baseline < ref_baseline
+            continue
+        endif
+
+        if baseline > ref_baseline
+            return {}
+        endif
+
+        if baseline == ref_baseline && has_key(a:line, 'bypte') != has_key(refline, 'btype')
+            break
+        endif
+    endfor
+
+    return refline
+endfunction " }}}
+
 " -----------------------------------------------------------------------------
 " Logic functions " }}}
 " =============================================================================
@@ -305,29 +346,29 @@ endfunction " }}}
 
 function! markdont#set_bullet () " {{{
     let line = s:parseline('.')
-    let refline = s:parseline(line('.') - 1)
 
-    " Search for last two lines for reference
-    if refline['text'] == ''
-        let refline = s:parseline(line('.') - 2)
-    endif
+    let refline = s:search_refline(line)
 
-    if has_key(refline, 'btype')
+    if refline == {} || !has_key(refline, 'btype')
+        if get(line, 'btype', s:NO_BULLET) == s:NO_BULLET
+            let line['btype'] = s:UL_BULLET
+
+        elseif line['btype'] == s:UL_BULLET
+            let line['btype'] = s:OL_BULLET
+            let line['bnum'] = 1
+
+        elseif line['btype'] == s:OL_BULLET
+            let line['btype'] = s:UL_BULLET
+            unlet line['bnum']
+        endif
+
+    else
+        let line['indent'] = refline['indent']
+
         let line['btype'] = refline['btype']
         if has_key(refline, 'bnum')
             let line['bnum'] = refline['bnum'] + 1
         endif
-
-    elseif get(line, 'btype', s:NO_BULLET) == s:NO_BULLET
-        let line['btype'] = s:UL_BULLET
-
-    elseif line['btype'] == s:UL_BULLET
-        let line['btype'] = s:OL_BULLET
-        let line['bnum'] = 1
-
-    elseif line['btype'] == s:OL_BULLET
-        let line['btype'] = s:UL_BULLET
-        unlet line['bnum']
     endif
 
     call s:writeline(line)
@@ -337,8 +378,14 @@ endfunction " }}}
 function! markdont#remove_bullet () range " {{{
     for linenum in range(a:firstline, a:lastline)
         let line = s:parseline(linenum)
+
+        let refline = s:search_refline(line)
+
         if has_key(line, 'btype')
             unlet line['btype']
+            if refline != {} && has_key(refline, 'btype')
+                let line['indent'] = repeat(' ', strlen(refline['textleft']))
+            endif
             call s:writeline(line)
         endif
     endfor
