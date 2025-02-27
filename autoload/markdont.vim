@@ -2,6 +2,11 @@ let s:NO_BULLET = 0
 let s:UL_BULLET = 1
 let s:OL_BULLET = 2
 
+let s:TYPE_NONE = 0
+let s:TYPE_UL_ITEM = 1
+let s:TYPE_OL_ITEM = 2
+let s:TYPE_HEADING = 2
+
 let s:UL_BULLET_SYMBOLS = ['*', '-', '+']
 let s:OL_BULLET_FORMATS = ['#.', '#)']
 
@@ -150,6 +155,7 @@ function! s:parseline (linenum) " {{{
     " bullet -*+
     let m = matchlist(line, '\v^( *)([-*+])( +)(.*)$')
     if m != []
+        let ret['type'] = s:TYPE_UL_ITEM
         let ret['indent'] = m[1]
         let ret['btype'] = s:UL_BULLET
         let ret['bullet'] = m[2] . m[3]
@@ -162,6 +168,7 @@ function! s:parseline (linenum) " {{{
     " bullet 1.  1)
     let m = matchlist(line, '\v^( *)(\d+)(\)|\.)( +)(.*)$')
     if m != []
+        let ret['type'] = s:TYPE_OL_ITEM
         let ret['indent'] = m[1]
         let ret['btype'] = s:OL_BULLET
         let ret['bullet'] = m[2] . m[3] . m[4]
@@ -176,6 +183,7 @@ function! s:parseline (linenum) " {{{
     " ## heading
     let m = matchlist(line, '\v^(#+)( *)(.*)$')
     if m != []
+        let ret['type'] = s:TYPE_HEADING
         let ret['indent'] = ''
         let ret['heading'] = m[1]
         let ret['hspace'] = m[2]
@@ -186,6 +194,7 @@ function! s:parseline (linenum) " {{{
 
     " normal lines
     let m = matchlist(line, '\v(^ *)(.*)')
+    let ret['type'] = s:TYPE_NONE
     let ret['indent'] = m[1]
     let ret['text'] = m[2]
     let ret['textleft'] = m[1]
@@ -513,7 +522,7 @@ function! markdont#increase_indent () range " {{{
         endif
 
         " Skip empty lines
-        if get(line, 'indent', '') == '' && get(line, 'text', '') == ''
+        if line['type'] == s:TYPE_NONE && get(line, 'indent', '') == '' && get(line, 'text', '') == ''
             continue
         endif
 
@@ -552,7 +561,7 @@ function! markdont#decrease_indent () range " {{{
         endif
 
         " Skip empty lines
-        if get(line, 'indent', '') == '' && get(line, 'text', '') == ''
+        if line['type'] == s:TYPE_NONE && get(line, 'indent', '') == '' && get(line, 'text', '') == ''
             continue
         endif
 
