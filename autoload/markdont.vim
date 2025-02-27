@@ -1,8 +1,4 @@
-let s:NO_BULLET = 0
-let s:UL_BULLET = 1
-let s:OL_BULLET = 2
-
-let s:TYPE_NONE = ''
+let s:TYPE_NONE = v:false
 let s:TYPE_UL = 'UL'
 let s:TYPE_OL = 'OL'
 let s:TYPE_HEADING = 'HD'
