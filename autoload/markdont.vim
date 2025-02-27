@@ -439,7 +439,7 @@ endfunction " }}}
 
 function! markdont#move_cursor_to_line_start (toggle) " {{{
     let line = s:parseline('.')
-    let logical_line_start = strlen(line['origin']) - strlen(line['text']) + 1
+    let logical_line_start = strlen(line['textleft']) + 1
     if col('.') == logical_line_start && a:toggle
         if has_key(line, 'indent')
             call cursor(line('.'), strlen(line['indent']) + 1)
@@ -597,7 +597,7 @@ endfunction " }}}
 function! markdont#tab () " {{{
     let line = s:parseline('.')
 
-    if has_key(line, 'heading')
+    if line['type'] == s:TYPE_HEADING
         if strlen(line['hspace']) == 0
             let line['hspace'] = ' '
             call s:writeline(line)
@@ -617,7 +617,7 @@ function! markdont#tab () " {{{
         return "\<TAB>"
     endif
 
-    let logical_line_start = strlen(line['origin']) - strlen(line['text']) + 1
+    let logical_line_start = strlen(line['textleft']) + 1
     if col('.') <= logical_line_start
         call markdont#increase_indent()
         call markdont#move_cursor_to_line_start(0)
@@ -640,7 +640,7 @@ function! markdont#shift_tab () " {{{
         return ''
     endif
 
-    let logical_line_start = strlen(line['origin']) - strlen(line['text']) + 1
+    let logical_line_start = strlen(line['textleft']) + 1
     if col('.') <= logical_line_start
         call markdont#decrease_indent()
         call markdont#move_cursor_to_line_start(0)
