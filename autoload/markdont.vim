@@ -112,8 +112,8 @@ function! s:writeline (line) " {{{
     endif
 
     if a:line['origin'] != new_line
-        call setline(a:line['linenum'], new_line)
-        if a:line['linenum'] == line('.')
+        call setline(a:line['#'], new_line)
+        if a:line['#'] == line('.')
             let new_len = s:vwidth(new_line)
             call s:drift_cursor_position(new_len - line_len)
         endif
@@ -148,7 +148,7 @@ function! s:parseline (linenum) " {{{
     endif
 
     let ret = {}
-    let ret['linenum'] = linenum
+    let ret['#'] = linenum
     let line = getline(a:linenum)
     let ret['origin'] = line
 
@@ -207,7 +207,7 @@ function! s:align_bullet (line, alignment) " {{{
         return
     endif
 
-    let linenum = a:line['linenum'] - 1
+    let linenum = a:line['#'] - 1
     let meet_empty_line = v:false
     let action = 'UNKNOWN'
     while linenum >= 1
@@ -309,7 +309,7 @@ function! s:search_refline (line) " {{{
     " Search for previous lines for reference
     let refline = {}
     let meet_empty_line = v:false
-    for i in range(a:line['linenum'] - 1, 1, -1)
+    for i in range(a:line['#'] - 1, 1, -1)
         let refline = s:parseline(i)
         if refline == {}
             break
