@@ -2,10 +2,10 @@ let s:NO_BULLET = 0
 let s:UL_BULLET = 1
 let s:OL_BULLET = 2
 
-let s:TYPE_NONE = 0
-let s:TYPE_UL_ITEM = 1
-let s:TYPE_OL_ITEM = 2
-let s:TYPE_HEADING = 2
+let s:TYPE_NONE = ''
+let s:TYPE_UL = 'UL'
+let s:TYPE_OL = 'OL'
+let s:TYPE_HEADING = 'HD'
 
 let s:UL_BULLET_SYMBOLS = ['*', '-', '+']
 let s:OL_BULLET_FORMATS = ['#.', '#)']
@@ -80,22 +80,21 @@ endfunction " }}}
 
 
 function! s:get_bullet_str (line) " {{{
-    if !has_key(a:line, 'btype')
-        return ''
-
-    elseif a:line['btype'] == s:UL_BULLET
+    if a:line['type'] == s:TYPE_UL
         let indent = a:line['indent']
         let indent_level = (s:vwidth(indent) / &softtabstop)
         let bullet = s:UL_BULLET_SYMBOLS[indent_level % len(s:UL_BULLET_SYMBOLS)]
         return bullet . s:get_bspace(bullet)
 
-    elseif a:line['btype'] == s:OL_BULLET
+    elseif a:line['type'] == s:TYPE_OL
         let indent = a:line['indent']
         let indent_level = (s:vwidth(indent) / &softtabstop)
         let bformat = s:OL_BULLET_FORMATS[indent_level % len(s:OL_BULLET_FORMATS)]
         let bullet = substitute(bformat, '#', a:line['bnum'], '')
         return bullet . s:get_bspace(bullet)
     endif
+
+    return ''
 endfunction " }}}
 
 
@@ -103,7 +102,7 @@ function! s:writeline (line) " {{{
     let line_len = s:vwidth(a:line['origin'])
     let new_line = a:line['origin']
 
-    if has_key(a:line, 'btype')
+    if a:line['type'] == s:TYPE_UL || a:line['type'] == s:TYPE_OL
         let new_line = a:line['indent'] . s:get_bullet_str(a:line) . a:line['text']
     elseif has_key(a:line, 'heading')
         let new_line = a:line['indent'] . a:line['heading'] . a:line['hspace'] . a:line['text']
@@ -155,9 +154,8 @@ function! s:parseline (linenum) " {{{
     " bullet -*+
     let m = matchlist(line, '\v^( *)([-*+])( +)(.*)$')
     if m != []
-        let ret['type'] = s:TYPE_UL_ITEM
+        let ret['type'] = s:TYPE_UL
         let ret['indent'] = m[1]
-        let ret['btype'] = s:UL_BULLET
         let ret['bullet'] = m[2] . m[3]
         let ret['btext'] = m[2]
         let ret['text'] = m[4]
@@ -168,9 +166,8 @@ function! s:parseline (linenum) " {{{
     " bullet 1.  1)
     let m = matchlist(line, '\v^( *)(\d+)(\)|\.)( +)(.*)$')
     if m != []
-        let ret['type'] = s:TYPE_OL_ITEM
+        let ret['type'] = s:TYPE_OL
         let ret['indent'] = m[1]
-        let ret['btype'] = s:OL_BULLET
         let ret['bullet'] = m[2] . m[3] . m[4]
         let ret['btext'] = m[2] . m[3]
         let ret['bnum'] = str2nr(m[2])
@@ -203,7 +200,7 @@ endfunction " }}}
 
 
 function! s:align_bullet (line, alignment) " {{{
-    if !has_key(a:line, 'btype')
+    if !has_key(a:line, 'bullet')
         return
     endif
 
@@ -222,7 +219,7 @@ function! s:align_bullet (line, alignment) " {{{
                 break
             endif
 
-        elseif has_key(refline, 'btype')
+        elseif has_key(refline, 'bullet')
             " a bulleted item
             let meet_empty_line = v:false
             let align_point_1 = s:vwidth(refline['indent'])
@@ -292,8 +289,8 @@ function! s:align_bullet (line, alignment) " {{{
 
     elseif action == 'FOLLOW'
         let a:line['indent'] = refline['indent']
-        let a:line['btype'] = refline['btype']
-        if refline['btype'] == s:OL_BULLET
+        let a:line['type'] = refline['type']
+        if refline['type'] == s:TYPE_OL
             let a:line['bformat'] = refline['bformat']
             let a:line['bnum'] = refline['bnum'] + 1
         endif
@@ -337,7 +334,7 @@ function! s:search_refline (line) " {{{
             return {}
         endif
 
-        if baseline == ref_baseline && has_key(a:line, 'bypte') != has_key(refline, 'btype')
+        if baseline == ref_baseline && has_key(a:line, 'bullet') != has_key(refline, 'bullet')
             break
         endif
     endfor
@@ -358,23 +355,23 @@ function! markdont#set_bullet () " {{{
 
     let refline = s:search_refline(line)
 
-    if refline == {} || !has_key(refline, 'btype')
-        if get(line, 'btype', s:NO_BULLET) == s:NO_BULLET
-            let line['btype'] = s:UL_BULLET
+    if refline == {} || !has_key(refline, 'bullet')
+        if get(line, 'type', s:TYPE_NONE) == s:TYPE_NONE
+            let line['type'] = s:TYPE_UL
 
-        elseif line['btype'] == s:UL_BULLET
-            let line['btype'] = s:OL_BULLET
+        elseif line['type'] == s:TYPE_UL
+            let line['type'] = s:TYPE_OL
             let line['bnum'] = 1
 
-        elseif line['btype'] == s:OL_BULLET
-            let line['btype'] = s:UL_BULLET
+        elseif line['type'] == s:TYPE_OL
+            let line['type'] = s:TYPE_UL
             unlet line['bnum']
         endif
 
     else
         let line['indent'] = refline['indent']
 
-        let line['btype'] = refline['btype']
+        let line['type'] = refline['type']
         if has_key(refline, 'bnum')
             let line['bnum'] = refline['bnum'] + 1
         endif
@@ -390,9 +387,10 @@ function! markdont#remove_bullet () range " {{{
 
         let refline = s:search_refline(line)
 
-        if has_key(line, 'btype')
-            unlet line['btype']
-            if refline != {} && has_key(refline, 'btype')
+        if has_key(line, 'bullet')
+            unlet line['bullet']
+            let line['type'] = s:TYPE_NONE
+            if refline != {} && has_key(refline, 'bullet')
                 let line['indent'] = repeat(' ', strlen(refline['textleft']))
             endif
             call s:writeline(line)
@@ -418,7 +416,7 @@ function! markdont#carriage_return () " {{{
     call append('.', line['indent'] . right)
     call cursor(line('.') + 1, 1)
 
-    if has_key(line, 'btype')
+    if has_key(line, 'bullet')
         call markdont#set_bullet()
     endif
     call markdont#move_cursor_to_line_start(0)
@@ -428,8 +426,8 @@ endfunction " }}}
 function! markdont#backspace () " {{{
     let line = s:parseline('.')
 
-    if has_key(line, 'btype') && strlen(line['textleft']) + 1 == col('.')
-        unlet line['btype']
+    if has_key(line, 'bullet') && strlen(line['textleft']) + 1 == col('.')
+        let line['type'] = s:TYPE_NONE
         let line['indent'] = repeat(' ', strlen(line['textleft']))
         call s:writeline(line)
         return ''
@@ -544,7 +542,7 @@ function! markdont#increase_indent () range " {{{
             let line['indent'] = repeat(' ', strlen(line['indent']) - misindent + &shiftwidth)
         endif
 
-        if has_key(line, 'btype')
+        if has_key(line, 'bullet')
             call s:align_bullet(line, '>')
         endif
         call s:writeline(line)
@@ -587,7 +585,7 @@ function! markdont#decrease_indent () range " {{{
             endif
         endif
 
-        if has_key(line, 'btype')
+        if has_key(line, 'bullet')
             call s:align_bullet(line, '<')
         endif
 
@@ -615,7 +613,7 @@ function! markdont#tab () " {{{
         return ''
     endif
 
-    if !has_key(line, 'btype')
+    if !has_key(line, 'bullet')
         return "\<TAB>"
     endif
 
