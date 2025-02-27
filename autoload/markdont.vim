@@ -1,10 +1,10 @@
-let s:TYPE_NONE = v:false
-let s:TYPE_UL = 'UL'
-let s:TYPE_OL = 'OL'
-let s:TYPE_HEADING = 'HD'
+const s:TYPE_NONE = v:false
+const s:TYPE_UL = 'UL'
+const s:TYPE_OL = 'OL'
+const s:TYPE_HEADING = 'HD'
 
-let s:UL_BULLET_SYMBOLS = ['*', '-', '+']
-let s:OL_BULLET_FORMATS = ['#.', '#)']
+const s:UL_BULLET_SYMBOLS = ['*', '-', '+']
+const s:OL_BULLET_FORMATS = ['#.', '#)']
 
 
 " =============================================================================
@@ -195,110 +195,84 @@ function! s:parseline (linenum) " {{{
 endfunction " }}}
 
 
-function! s:align_bullet (line, alignment) " {{{
+function! s:align_bullet (line, refline, alignment) " {{{
     if !has_key(a:line, 'bullet')
         return
     endif
 
-    let linenum = a:line['#'] - 1
-    let meet_empty_line = v:false
-    let action = 'UNKNOWN'
-    while linenum >= 1
-        let refline = s:parseline(linenum)
-        if refline['text'] == ''
-            " empty line
-            if meet_empty_line == v:false
-                let meet_empty_line = v:true
-            else
-                " two consecutive empty lines
-                let action = 'RESET_BULLET'
-                break
+    const RESET = 'RESET'
+    const FOLLOW = 'FOLLOW'
+
+    if !has_key(a:refline, 'bullet')
+        let action = RESET
+
+    else
+        let align_point_1 = s:vwidth(a:refline['indent'])
+        let align_point_2 = s:vwidth(a:refline['textleft'])
+        if s:vwidth(a:refline['indent']) == s:vwidth(a:line['indent'])
+            " same indent, follow it
+            let action = FOLLOW
+
+        elseif s:is_monotonic('<', [
+                    \ s:vwidth(a:line['indent']),
+                    \ align_point_1,
+                    \ align_point_2,
+                    \ ])
+            " refline has greater indent than this line,
+            " maybe it's belong to a higher list, so keep searching
+            let action = RESET
+
+        elseif s:is_monotonic('<', [
+                    \ align_point_1,
+                    \ s:vwidth(a:line['indent']),
+                    \ align_point_2,
+                    \ ])
+            " my indent is between reference line's indent and text
+            if a:alignment == '<'
+                " follow it
+                let action = FOLLOW
+
+            elseif a:alignment == '>'
+                " indent one level deeper and reset bullet number
+                let a:line['indent'] = repeat(' ', align_point_2)
+                let action = RESET
             endif
 
-        elseif has_key(refline, 'bullet')
-            " a bulleted item
-            let meet_empty_line = v:false
-            let align_point_1 = s:vwidth(refline['indent'])
-            let align_point_2 = s:vwidth(refline['origin']) - s:vwidth(refline['text'])
-            if s:vwidth(refline['indent']) == s:vwidth(a:line['indent'])
-                " same indent, follow it
-                let action = 'FOLLOW'
-                break
-
-            elseif s:is_monotonic('<', [
-                        \ s:vwidth(a:line['indent']),
-                        \ align_point_1,
-                        \ align_point_2,
-                        \ ])
-                " refline has greater indent than this line,
-                " maybe it's belong to a higher list, so keep searching
-
-            " elseif s:vwidth(refline['indent']) > s:vwidth(a:line['indent'])
-
-            elseif s:is_monotonic('<', [
-                        \ align_point_1,
-                        \ s:vwidth(a:line['indent']),
-                        \ align_point_2,
-                        \ ])
-                " my indent is between reference line's indent and text
-                if a:alignment == '<'
-                    " follow it
-                    let action = 'FOLLOW'
-                    break
-                elseif a:alignment == '>'
-                    " indent one level deeper and reset bullet number
-                    let a:line['indent'] = repeat(' ', align_point_2)
-                    let action = 'RESET_BULLET'
-                    break
-                endif
-
-            elseif s:is_monotonic('<', [
-                        \ align_point_1,
-                        \ align_point_2,
-                        \ s:vwidth(a:line['indent']),
-                        \ ])
-
-            else
-                " lesser indent bulleted list item, I'm either its subitem or
-                " no relation, so reset bullet
-                let action = 'RESET_BULLET'
-                break
-
-            endif
+        elseif s:is_monotonic('<', [
+                    \ align_point_1,
+                    \ align_point_2,
+                    \ s:vwidth(a:line['indent']),
+                    \ ])
+            " refline has lesser indent than this line
+            let action = RESET
 
         else
-            " normal line
-            let meet_empty_line = v:false
-            if s:vwidth(refline['indent']) <= s:vwidth(a:line['indent'])
-                " same or lesser indent, reset bullet
-                let action = 'RESET_BULLET'
-                break
-            endif
+            " lesser indent bulleted list item, I'm either its subitem or
+            " no relation, so reset bullet
+            let action = RESET
 
         endif
+    endif
 
-        let linenum -= 1
-    endwhile
-
-    if action == 'RESET_BULLET'
+    if action == RESET
         let a:line['bnum'] = 1
 
-    elseif action == 'FOLLOW'
-        let a:line['indent'] = refline['indent']
-        let a:line['type'] = refline['type']
-        if refline['type'] == s:TYPE_OL
-            let a:line['bformat'] = refline['bformat']
-            let a:line['bnum'] = refline['bnum'] + 1
+    elseif action == FOLLOW
+        let a:line['indent'] = a:refline['indent']
+        let a:line['type'] = a:refline['type']
+        if a:refline['type'] == s:TYPE_OL
+            let a:line['bformat'] = a:refline['bformat']
+            let a:line['bnum'] = a:refline['bnum'] + 1
         endif
 
     else
-        echom 's:align_bullet():'. action
+        " echom 's:align_bullet():'. action
 
     endif
 endfunction " }}}
 
 
-function! s:search_refline (line) " {{{
+function! s:search_refline (line, types) " {{{
     " Search for previous lines for reference
     let refline = {}
     let meet_empty_line = v:false
@@ -330,7 +304,7 @@ function! s:search_refline (line) " {{{
             return {}
         endif
 
-        if baseline == ref_baseline && has_key(a:line, 'bullet') != has_key(refline, 'bullet')
+        if baseline == ref_baseline && index(a:types, refline['type']) != -1
             break
         endif
     endfor
@@ -349,7 +323,7 @@ endfunction " }}}
 function! markdont#set_bullet () " {{{
     let line = s:parseline('.')
 
-    let refline = s:search_refline(line)
+    let refline = s:search_refline(line, [s:TYPE_UL, s:TYPE_OL])
 
     if refline == {} || !has_key(refline, 'bullet')
         if get(line, 'type', s:TYPE_NONE) == s:TYPE_NONE
@@ -381,7 +355,7 @@ function! markdont#remove_bullet () range " {{{
     for linenum in range(a:firstline, a:lastline)
         let line = s:parseline(linenum)
 
-        let refline = s:search_refline(line)
+        let refline = s:search_refline(line, [s:TYPE_NONE, s:TYPE_UL, s:TYPE_OL])
 
         if has_key(line, 'bullet')
             unlet line['bullet']
@@ -539,7 +513,7 @@ function! markdont#increase_indent () range " {{{
         endif
 
         if has_key(line, 'bullet')
-            call s:align_bullet(line, '>')
+            call s:align_bullet(line, refline, '>')
         endif
         call s:writeline(line)
     endfor
@@ -582,7 +556,7 @@ function! markdont#decrease_indent () range " {{{
         endif
 
         if has_key(line, 'bullet')
-            call s:align_bullet(line, '<')
+            call s:align_bullet(line, refline, '<')
         endif
 
         call s:writeline(line)
