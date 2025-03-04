@@ -327,16 +327,16 @@ function! markdont#set_bullet () " {{{
     let refline = s:search_refline(line, [s:TYPE_UL, s:TYPE_OL])
 
     if refline == {} || !has_key(refline, 'bullet')
-        if get(line, 'type', s:TYPE_NONE) == s:TYPE_NONE
-            let line['type'] = s:TYPE_UL
-
-        elseif line['type'] == s:TYPE_UL
+        if get(line, 'type', s:TYPE_NONE) == s:TYPE_UL
             let line['type'] = s:TYPE_OL
             let line['bnum'] = 1
 
-        elseif line['type'] == s:TYPE_OL
+        elseif get(line, 'type', s:TYPE_NONE) == s:TYPE_OL
             let line['type'] = s:TYPE_UL
             unlet line['bnum']
+
+        else
+            let line['type'] = s:TYPE_UL
         endif
 
     else
