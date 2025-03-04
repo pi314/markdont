@@ -100,8 +100,8 @@ function! s:writeline (line) " {{{
 
     if a:line['type'] == s:TYPE_UL || a:line['type'] == s:TYPE_OL
         let new_line = a:line['indent'] . s:get_bullet_str(a:line) . a:line['text']
-    elseif has_key(a:line, 'heading')
-        let new_line = a:line['indent'] . a:line['heading'] . a:line['hspace'] . a:line['text']
+    elseif a:line['type'] == s:TYPE_HEADING
+        let new_line = a:line['indent'] . repeat('#', a:line['level']) . ' ' . a:line['text']
     else
         let new_line = a:line['indent'] . a:line['text']
     endif
@@ -126,7 +126,8 @@ function! s:parseline (linenum) " {{{
     "   checkbox = "-" space[1] mark
     "   mark = "[ ]" | "[X]"
     "
-    " <heading> space[N] <text>
+    " <heading> <text>
+    "   heading = mark space[N]
     "
     " <indent> <text>
     "
@@ -155,7 +156,7 @@ function! s:parseline (linenum) " {{{
         let ret['bullet'] = m[2] . m[3]
         let ret['btext'] = m[2]
         let ret['text'] = m[4]
-        let ret['textleft'] = m[1] . m[2] . m[3]
+        let ret['textleft'] = ret['indent'] . ret['bullet']
         return ret
     endif
 
@@ -169,7 +170,7 @@ function! s:parseline (linenum) " {{{
         let ret['bnum'] = str2nr(m[2])
         let ret['bformat'] = '#' . m[3]
         let ret['text'] = m[5]
-        let ret['textleft'] = m[1] . m[2] . m[3] . m[4]
+        let ret['textleft'] = ret['indent'] . ret['bullet']
         return ret
     endif
 
@@ -178,10 +179,10 @@ function! s:parseline (linenum) " {{{
     if m != []
         let ret['type'] = s:TYPE_HEADING
         let ret['indent'] = ''
-        let ret['heading'] = m[1]
-        let ret['hspace'] = m[2]
+        let ret['heading'] = m[1] . m[2]
+        let ret['level'] = strlen(m[1])
         let ret['text'] = m[3]
-        let ret['textleft'] = m[1] . m[2]
+        let ret['textleft'] = ret['heading']
         return ret
     endif
 
@@ -369,6 +370,20 @@ function! markdont#remove_bullet () range " {{{
 endfunction " }}}
 
 
+function! markdont#toggle_heading () " {{{
+    let line = s:parseline('.')
+
+    if line['type'] == s:TYPE_HEADING
+        let line['type'] = s:TYPE_NONE
+    else
+        let line['type'] = s:TYPE_HEADING
+        let line['level'] = 1
+    endif
+
+    call s:writeline(line)
+endfunction " }}}
+
+
 function! markdont#carriage_return () " {{{
     let line = s:parseline('.')
     let offset = col('.') - 1
@@ -413,7 +428,7 @@ function! markdont#move_cursor_to_line_start (toggle) " {{{
     if col('.') == logical_line_start && a:toggle
         if has_key(line, 'indent')
             call cursor(line('.'), strlen(line['indent']) + 1)
-        elseif has_key(line, 'heading')
+        else
             call cursor(line('.'), 1)
         endif
     else
@@ -568,42 +583,40 @@ function! markdont#tab () " {{{
     let line = s:parseline('.')
 
     if line['type'] == s:TYPE_HEADING
-        if strlen(line['hspace']) == 0
-            let line['hspace'] = ' '
+        if line['heading'][-1:] != ' '
             call s:writeline(line)
-            call cursor(line('.'), strlen(line['heading'] . line['hspace']) + 1)
+            call markdont#move_cursor_to_line_start(0)
             return ''
         endif
 
-        if strlen(line['heading']) < 6
-            let line['heading'] .= '#'
+        if line['level'] < 6
+            let line['level'] += 1
             call s:writeline(line)
-            call cursor(line('.'), strlen(line['heading'] . line['hspace']) + 1)
+            call markdont#move_cursor_to_line_start(0)
         endif
         return ''
     endif
 
-    if !has_key(line, 'bullet')
-        return "\<TAB>"
+    if line['type'] == s:TYPE_UL || line['type'] == s:TYPE_OL
+        let logical_line_start = strlen(line['textleft']) + 1
+        if col('.') <= logical_line_start
+            call markdont#increase_indent()
+            call markdont#move_cursor_to_line_start(0)
+            return ''
+        endif
     endif
 
-    let logical_line_start = strlen(line['textleft']) + 1
-    if col('.') <= logical_line_start
-        call markdont#increase_indent()
-        call markdont#move_cursor_to_line_start(0)
-        return ''
-    else
-        return "\<TAB>"
-    endif
+    return "\<TAB>"
+
 endfunction " }}}
 
 
 function! markdont#shift_tab () " {{{
     let line = s:parseline('.')
 
-    if has_key(line, 'heading')
-        if strlen(line['heading']) > 1
-            let line['heading'] = line['heading'][:-2]
+    if line['type'] == s:TYPE_HEADING
+        if line['level'] > 1
+            let line['level'] -= 1
             call s:writeline(line)
             call markdont#move_cursor_to_line_start(0)
         endif
@@ -615,6 +628,7 @@ function! markdont#shift_tab () " {{{
         call markdont#decrease_indent()
         call markdont#move_cursor_to_line_start(0)
     endif
+
     return ''
 endfunction " }}}
 

@@ -6,6 +6,10 @@ nnoremap <buffer> <silent> <Plug>Markdont_RemoveBullet <cmd>call markdont#remove
 inoremap <buffer> <silent> <Plug>Markdont_RemoveBullet <cmd>call markdont#remove_bullet()<CR>
 vnoremap <buffer> <silent> <Plug>Markdont_RemoveBullet :call markdont#remove_bullet()<CR>gv
 
+nnoremap <buffer> <silent> <Plug>Markdont_ToggleHeading <cmd>call markdont#toggle_heading()<CR>
+inoremap <buffer> <silent> <Plug>Markdont_ToggleHeading <cmd>call markdont#toggle_heading()<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_ToggleHeading :call markdont#toggle_heading()<CR>gv
+
 inoremap <buffer> <silent> <Plug>Markdont_CarriageReturn <cmd>call markdont#carriage_return()<CR>
 nnoremap <buffer> <silent> <Plug>Markdont_o              A<cmd>call markdont#carriage_return()<CR>
 
@@ -38,6 +42,10 @@ if !exists('g:markdont_disable_default_key_mappings') || !g:markdont_disable_def
     nnoremap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
     inoremap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
     vnoremap <buffer> <silent> <leader>B <Plug>Markdont_RemoveBullet
+
+    nnoremap <buffer> <silent> <nowait> <leader>t <Plug>Markdont_ToggleHeading
+    inoremap <buffer> <silent> <nowait> <leader>t <Plug>Markdont_ToggleHeading
+    vnoremap <buffer> <silent> <nowait> <leader>t <Plug>Markdont_ToggleHeading
 
     inoremap <buffer> <silent> <CR> <Plug>Markdont_CarriageReturn
     nnoremap <buffer> <silent> o    <Plug>Markdont_o
@@ -77,6 +85,10 @@ if exists('g:markdont_disable_default_key_mappings') && g:markdont_disable_defau
     nunmap <buffer> <leader>B
     iunmap <buffer> <leader>B
     vunmap <buffer> <leader>B
+
+    nunmap <buffer> <leader>t
+    iunmap <buffer> <leader>t
+    vunmap <buffer> <leader>t
 
     iunmap <buffer> <CR>
 
