@@ -10,6 +10,12 @@ nnoremap <buffer> <silent> <Plug>Markdont_ToggleHeading <cmd>call markdont#toggl
 inoremap <buffer> <silent> <Plug>Markdont_ToggleHeading <cmd>call markdont#toggle_heading()<CR>
 vnoremap <buffer> <silent> <Plug>Markdont_ToggleHeading :call markdont#toggle_heading()<CR>gv
 
+vnoremap <buffer> <silent> <Plug>Markdont_MakeLink  <cmd>call markdont#make_link()<CR>
+nnoremap <buffer> <silent> <Plug>Markdont_MakeLink  viw<cmd>call markdont#make_link()<CR>
+nnoremap <buffer> <silent> <Plug>Markdont_RemoveLink    <cmd>call markdont#remove_link()<CR>
+nnoremap <buffer> <silent> <Plug>Markdont_EditLinkText  <cmd>call markdont#edit_link_text()<CR>i
+nnoremap <buffer> <silent> <Plug>Markdont_EditLinkLink  <cmd>call markdont#edit_link_link()<CR>i
+
 nnoremap <buffer> <silent> <Plug>Markdont_MoveCursorToLineStart <cmd>call markdont#move_cursor_to_line_start(1)<CR>
 vnoremap <buffer> <silent> <Plug>Markdont_MoveCursorToLineStart <cmd>call markdont#move_cursor_to_line_start(1)<CR>
 
@@ -61,6 +67,10 @@ if !(exists('g:markdont_disable_default_key_mappings') && g:markdont_disable_def
                 \ ['i',     '<S-TAB>',      '<Plug>markdont_ShiftTab'],
                 \ ['n',     'cc',           '<Plug>Markdont_cc'],
                 \ ['n',     'S',            '<Plug>Markdont_S'],
+                \ ['nv',    '<leader>l',    '<Plug>Markdont_MakeLink'],
+                \ ['n',     '<leader>L',    '<Plug>Markdont_RemoveLink'],
+                \ ['n',     'clt',          '<Plug>Markdont_EditLinkText'],
+                \ ['n',     'cll',          '<Plug>Markdont_EditLinkLink'],
                 \ ]
 
     for s:entry in s:mappings

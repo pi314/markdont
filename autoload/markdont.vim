@@ -384,6 +384,40 @@ function! markdont#toggle_heading () " {{{
 endfunction " }}}
 
 
+function! markdont#make_link () range " {{{
+    let reg_m = getreg('m')
+    normal! "mx
+    normal! i[]()
+    normal! F["mp
+    normal! f("mp
+    call setreg('m', reg_m)
+    normal! f)
+endfunction " }}}
+
+
+function! markdont#remove_link () range " {{{
+    normal! F[f(
+    normal! da(
+    normal! F[
+
+    let reg_m = getreg('m')
+    normal! "mdi[
+    normal! v%"mp
+endfunction " }}}
+
+
+function! markdont#edit_link_text () range " {{{
+    normal! F[ci[
+    normal! f]
+endfunction " }}}
+
+
+function! markdont#edit_link_link () range " {{{
+    normal! F[f(ci(
+    normal! f)
+endfunction " }}}
+
+
 function! markdont#carriage_return () " {{{
     let line = s:parseline('.')
     let offset = col('.') - 1
