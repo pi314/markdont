@@ -10,6 +10,30 @@ nnoremap <buffer> <silent> <Plug>Markdont_ToggleHeading <cmd>call markdont#toggl
 inoremap <buffer> <silent> <Plug>Markdont_ToggleHeading <cmd>call markdont#toggle_heading()<CR>
 vnoremap <buffer> <silent> <Plug>Markdont_ToggleHeading :call markdont#toggle_heading()<CR>gv
 
+nnoremap <buffer> <silent> <Plug>Markdont_SetHeading1 <cmd>call markdont#set_heading(1)<CR>
+inoremap <buffer> <silent> <Plug>Markdont_SetHeading1 <cmd>call markdont#set_heading(1)<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_SetHeading1 :call markdont#set_heading(1)<CR>gv
+
+nnoremap <buffer> <silent> <Plug>Markdont_SetHeading2 <cmd>call markdont#set_heading(2)<CR>
+inoremap <buffer> <silent> <Plug>Markdont_SetHeading2 <cmd>call markdont#set_heading(2)<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_SetHeading2 :call markdont#set_heading(2)<CR>gv
+
+nnoremap <buffer> <silent> <Plug>Markdont_SetHeading3 <cmd>call markdont#set_heading(3)<CR>
+inoremap <buffer> <silent> <Plug>Markdont_SetHeading3 <cmd>call markdont#set_heading(3)<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_SetHeading3 :call markdont#set_heading(3)<CR>gv
+
+nnoremap <buffer> <silent> <Plug>Markdont_SetHeading4 <cmd>call markdont#set_heading(4)<CR>
+inoremap <buffer> <silent> <Plug>Markdont_SetHeading4 <cmd>call markdont#set_heading(4)<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_SetHeading4 :call markdont#set_heading(4)<CR>gv
+
+nnoremap <buffer> <silent> <Plug>Markdont_SetHeading5 <cmd>call markdont#set_heading(5)<CR>
+inoremap <buffer> <silent> <Plug>Markdont_SetHeading5 <cmd>call markdont#set_heading(5)<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_SetHeading5 :call markdont#set_heading(5)<CR>gv
+
+nnoremap <buffer> <silent> <Plug>Markdont_SetHeading6 <cmd>call markdont#set_heading(6)<CR>
+inoremap <buffer> <silent> <Plug>Markdont_SetHeading6 <cmd>call markdont#set_heading(6)<CR>
+vnoremap <buffer> <silent> <Plug>Markdont_SetHeading6 :call markdont#set_heading(6)<CR>gv
+
 vnoremap <buffer> <silent> <Plug>Markdont_MakeLink  <cmd>call markdont#make_link()<CR>
 nnoremap <buffer> <silent> <Plug>Markdont_MakeLink  viw<cmd>call markdont#make_link()<CR>
 nnoremap <buffer> <silent> <Plug>Markdont_RemoveLink    <cmd>call markdont#remove_link()<CR>
@@ -54,6 +78,12 @@ if !(exists('g:markdont_disable_default_key_mappings') && g:markdont_disable_def
                 \ ['niv',   '<leader>b',    '<Plug>Markdont_SetBullet'],
                 \ ['niv',   '<leader>B',    '<Plug>Markdont_RemoveBullet'],
                 \ ['niv',   '<leader>h',    '<Plug>Markdont_ToggleHeading'],
+                \ ['nv',    't1',           '<Plug>Markdont_SetHeading1'],
+                \ ['nv',    't2',           '<Plug>Markdont_SetHeading2'],
+                \ ['nv',    't3',           '<Plug>Markdont_SetHeading3'],
+                \ ['nv',    't4',           '<Plug>Markdont_SetHeading4'],
+                \ ['nv',    't5',           '<Plug>Markdont_SetHeading5'],
+                \ ['nv',    't6',           '<Plug>Markdont_SetHeading6'],
                 \ ['nv',    '^',            '<Plug>Markdont_MoveCursorToLineStart'],
                 \ ['n',     'I',            '<Plug>Markdont_EditFromLineStart'],
                 \ ['n',     'J',            '<Plug>Markdont_JoinTwoLines'],

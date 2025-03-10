@@ -384,6 +384,14 @@ function! markdont#toggle_heading () " {{{
 endfunction " }}}
 
 
+function! markdont#set_heading (level) " {{{
+    let line = s:parseline('.')
+    let line['type'] = s:TYPE_HEADING
+    let line['level'] = a:level
+    call s:writeline(line)
+endfunction " }}}
+
+
 function! markdont#make_link () range " {{{
     let reg_m = getreg('m')
     normal! "mx
