@@ -37,8 +37,8 @@ vnoremap <buffer> <silent> <Plug>Markdont_SetHeading6 :call markdont#set_heading
 vnoremap <buffer> <silent> <Plug>Markdont_MakeLink  <cmd>call markdont#make_link()<CR>
 nnoremap <buffer> <silent> <Plug>Markdont_MakeLink  viw<cmd>call markdont#make_link()<CR>
 nnoremap <buffer> <silent> <Plug>Markdont_RemoveLink    <cmd>call markdont#remove_link()<CR>
-nnoremap <buffer> <silent> <Plug>Markdont_EditLinkText  <cmd>call markdont#edit_link_text()<CR>i
-nnoremap <buffer> <silent> <Plug>Markdont_EditLinkLink  <cmd>call markdont#edit_link_link()<CR>i
+nnoremap <buffer> <silent> <Plug>Markdont_EditLinkText  <cmd>call markdont#edit_link_text()<CR>
+nnoremap <buffer> <silent> <Plug>Markdont_EditLinkLink  <cmd>call markdont#edit_link_link()<CR>
 
 nnoremap <buffer> <silent> <Plug>Markdont_MoveCursorToLineStart <cmd>call markdont#move_cursor_to_line_start(1)<CR>
 vnoremap <buffer> <silent> <Plug>Markdont_MoveCursorToLineStart <cmd>call markdont#move_cursor_to_line_start(1)<CR>
@@ -71,7 +71,7 @@ inoremap <buffer> <silent> <Plug>markdont_ShiftTab <C-\><C-o>:call markdont#shif
 nnoremap <buffer> <silent> <Plug>Markdont_cc <cmd>call markdont#cc()<CR>A
 nnoremap <buffer> <silent> <Plug>Markdont_S <cmd>call markdont#cc()<CR>A
 
-
+" -----------------------------------------------------------------------------
 
 if !(exists('g:markdont_disable_default_key_mappings') && g:markdont_disable_default_key_mappings)
     let s:mappings = [

@@ -417,6 +417,7 @@ endfunction " }}}
 function! markdont#edit_link_text () range " {{{
     normal! F[ci[
     normal! f]
+    startinsert
 endfunction " }}}
 
 
