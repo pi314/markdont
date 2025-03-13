@@ -51,4 +51,8 @@ let g:markdont_disable_default_key_mappings = v:true
     -   `J` joins two line without keeping second line's bullet
     -   `cc` and `S` keeps the list mark or heading if present
 
-* Links (WIP)
+*   Links
+
+    -   [normal] `<leader>l` makes the word under cursor a link
+    -   [visual] `<leader>l` makes selected text a link
+    -   `<leader>L` removes the link and only keeps the text
