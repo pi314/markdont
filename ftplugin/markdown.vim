@@ -90,6 +90,7 @@ if !(exists('g:markdont_disable_default_key_mappings') && g:markdont_disable_def
                 \ ['nv',    '>',            '<Plug>Markdont_IncreaseIndent'],
                 \ ['nv',    '<',            '<Plug>Markdont_DecreaseIndent'],
                 \ ['nv',    'tj',           '<Plug>Markdont_MoveToNextHeading'],
+                \ ['nv',    'tk',           '<Plug>Markdont_MoveToPrevHeading'],
                 \ ['i',     '<CR>',         '<Plug>Markdont_CarriageReturn'],
                 \ ['n',     'o',            '<Plug>Markdont_o'],
                 \ ['i',     '<BS>',         '<Plug>Markdont_Backspace'],
