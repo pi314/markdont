@@ -16,13 +16,18 @@ function! s:vwidth (s) " {{{
 endfunction " }}}
 
 
+function! s:startswith (str, prefix) " {{{
+    return a:str[0:len(a:prefix) - 1] ==# a:prefix
+endfunction " }}}
+
+
 function! s:endswith (str, postfix) " {{{
-    let str_len = strlen(a:str)
-    let pattern_len = strlen(a:postfix)
-    if str_len < pattern_len
-        return 0
-    endif
-    return (a:str[(str_len - pattern_len):] ==# a:postfix)
+    return a:str[len(a:str) - len(a:postfix):] ==# a:postfix
+endfunction " }}}
+
+
+function s:bool (value) " {{{
+    return (a:value) ? (v:true) : (v:false)
 endfunction " }}}
 
 
@@ -313,6 +318,36 @@ function! s:search_refline (line, types) " {{{
     return refline
 endfunction " }}}
 
+
+function s:is_cursor_in_link ()
+    let line = getline('.')
+    let offset = col('.') - 1
+    let delimeter_filter = 'v:val == "[" || v:val == "]" || v:val == "(" || v:val == ")"'
+    if col('.') == 0 || offset == 0
+        let left = ''
+        let cursor = filter(line[0], delimeter_filter)
+        let right = filter(line[1:], delimeter_filter)[0:3]
+    else
+        let left = filter(line[:offset-1], delimeter_filter)[-3:-1]
+        let cursor = filter(line[offset], delimeter_filter)
+        let right = filter(line[offset+1:], delimeter_filter)[0:2]
+    endif
+
+    if cursor == '[' && s:startswith(right, ']()')
+        let ret = v:true
+    elseif s:endswith(left, '[') && s:startswith(cursor . right, ']()')
+        let ret = v:true
+    elseif s:endswith(left, '[]') && s:startswith(cursor . right, '()')
+        let ret = v:true
+    elseif s:endswith(left, '[](') && s:startswith(cursor . right, ')')
+        let ret = v:true
+    else
+        let ret = v:false
+    endif
+
+    return ret
+endfunction
+
 " -----------------------------------------------------------------------------
 " Logic functions " }}}
 " =============================================================================
@@ -393,24 +428,47 @@ endfunction " }}}
 
 
 function! markdont#make_link () range " {{{
+    if s:is_cursor_in_link()
+        return
+    endif
+
+    if mode() == 'n'
+        normal! viw
+    endif
+
     let reg_m = getreg('m')
     normal! "mx
     normal! i[]()
     normal! F["mp
-    normal! f("mp
     call setreg('m', reg_m)
     normal! f)
 endfunction " }}}
 
 
 function! markdont#remove_link () range " {{{
-    normal! F[f(
-    normal! da(
+    if !s:is_cursor_in_link()
+        return
+    endif
+
     normal! F[
 
+    normal! f(
     let reg_m = getreg('m')
-    normal! "mdi[
+    normal! "mdi(
     normal! v%"mp
+    call setreg('m', reg_m)
+    normal! F[
+
+    exec 'normal! f]a '
+    exec 'normal! F[i '
+    normal! f]f[
+
+    normal! f]
+    let reg_m = getreg('m')
+    normal! "mdi]
+    normal! v%"mp
+    normal! BX
+    call setreg('m', reg_m)
 endfunction " }}}
 
 
@@ -424,6 +482,7 @@ endfunction " }}}
 function! markdont#edit_link_link () range " {{{
     normal! F[f(ci(
     normal! f)
+    startinsert
 endfunction " }}}
 
 

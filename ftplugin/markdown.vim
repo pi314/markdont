@@ -34,11 +34,11 @@ nnoremap <buffer> <silent> <Plug>(MarkdontSetHeading6) <cmd>call markdont#set_he
 inoremap <buffer> <silent> <Plug>(MarkdontSetHeading6) <cmd>call markdont#set_heading(6)<CR>
 vnoremap <buffer> <silent> <Plug>(MarkdontSetHeading6) :call markdont#set_heading(6)<CR>gv
 
-vnoremap <buffer> <silent> <Plug>(MarkdontMakeLink)  <cmd>call markdont#make_link()<CR>
-nnoremap <buffer> <silent> <Plug>(MarkdontMakeLink)  viw<cmd>call markdont#make_link()<CR>
-nnoremap <buffer> <silent> <Plug>(MarkdontRemoveLink)    <cmd>call markdont#remove_link()<CR>
-nnoremap <buffer> <silent> <Plug>(MarkdontEditLinkText)  <cmd>call markdont#edit_link_text()<CR>
-nnoremap <buffer> <silent> <Plug>(MarkdontEditLinkLink)  <cmd>call markdont#edit_link_link()<CR>
+vnoremap <buffer> <silent> <Plug>(MarkdontMakeLink)     <cmd>call markdont#make_link()<CR>
+nnoremap <buffer> <silent> <Plug>(MarkdontMakeLink)     <cmd>call markdont#make_link()<CR>
+nnoremap <buffer> <silent> <Plug>(MarkdontRemoveLink)   <cmd>call markdont#remove_link()<CR>
+nnoremap <buffer> <silent> <Plug>(MarkdontEditLinkText) <cmd>call markdont#edit_link_text()<CR>
+nnoremap <buffer> <silent> <Plug>(MarkdontEditLinkLink) <cmd>call markdont#edit_link_link()<CR>
 
 nnoremap <buffer> <silent> <Plug>(MarkdontMoveToLineStart) <cmd>call markdont#move_cursor_to_line_start(1)<CR>
 vnoremap <buffer> <silent> <Plug>(MarkdontMoveToLineStart) <cmd>call markdont#move_cursor_to_line_start(1)<CR>
