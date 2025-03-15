@@ -19,6 +19,15 @@ syn match markdownListItemMarker /\v^%(\s*)[-*+]%(\s+%(\S|$))@=/
 syn match markdownListItemMarker /\v^%(\s*)[0-9]+[.)]%(\s+%(\S|$))@=/
 
 " -----------------------------------------------------------------------------
+" Emphasis
+
+syn region markdownSingleEmphasis start=/\v\z(\*|_)/ end=/\v\z1/ oneline keepend
+
+syn region markdownDoubleEmphasis start=/\v\z(\*\*|__)/ end=/\v\z1/ oneline keepend
+
+syn region markdownTripleEmphasis start=/\v\z(\*\*\*|___)/ end=/\v\z1/ oneline keepend
+
+" -----------------------------------------------------------------------------
 " Code
 
 syn region markdownCode matchgroup=markdownCodeMarker start=/\v`%(`)@!/ skip=/\\`/ end=/`/
@@ -106,6 +115,10 @@ hi markdownHeadingMarker    ctermfg=202
 hi markdownHeadingText      ctermfg=208
 
 hi markdownListItemMarker   ctermfg=11
+
+hi markdownSingleEmphasis   cterm=italic
+hi markdownDoubleEmphasis   cterm=bold
+hi markdownTripleEmphasis   cterm=bold,italic
 
 hi markdownCodeMarker       ctermfg=5
 hi markdownCodeText         ctermfg=13
