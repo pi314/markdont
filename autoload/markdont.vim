@@ -550,41 +550,59 @@ function! markdont#move_cursor_to_next_heading () " {{{
         let row = row + 2
     endif
 
-    while row <= line('$')
+    let in_code = v:false
+    for row in range(row, line('$'))
         let line = getline(row)
-        if s:is_heading(line)
-            call cursor(row, 1)
-            return
+
+        if line =~ '\v^```.+$'
+            let in_code = v:true
+        elseif line =~ '\v^```$'
+            let in_code = v:false
         endif
-        if s:is_heading_underline(line)
-            let lastline = getline(row - 1)
-            if lastline != ''
-                call cursor(row - 1, 1)
+
+        if !in_code
+            if s:is_heading(line)
+                call cursor(row, 1)
                 return
             endif
+            if s:is_heading_underline(line)
+                let lastline = getline(row - 1)
+                if lastline != ''
+                    call cursor(row - 1, 1)
+                    return
+                endif
+            endif
         endif
-        let row += 1
-    endwhile
+    endfor
 endfunction " }}}
 
 
 function! markdont#move_cursor_to_prev_heading () range " {{{
     let row = line('.') - 1
-    while row > 0
+    let in_code = v:false
+    for row in range(line('.') - 1, 1, -1)
         let line = getline(row)
-        if s:is_heading(line)
-            call cursor(row, 1)
-            return
+
+        if line =~ '\v^```.+$'
+            let in_code = v:false
+        elseif line =~ '\v^```$'
+            let in_code = v:true
         endif
-        if s:is_heading_underline(line)
-            let lastline = getline(row - 1)
-            if lastline != ''
-                call cursor(row - 1, 1)
+
+        if !in_code
+            if s:is_heading(line)
+                call cursor(row, 1)
                 return
             endif
+            if s:is_heading_underline(line)
+                let lastline = getline(row - 1)
+                if lastline != ''
+                    call cursor(row - 1, 1)
+                    return
+                endif
+            endif
         endif
-        let row -= 1
-    endwhile
+    endfor
 endfunction " }}}
 
 
