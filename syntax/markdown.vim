@@ -5,12 +5,16 @@ endif
 " -----------------------------------------------------------------------------
 " Heading
 
+" ATX style heading
 syn region markdownHeading matchgroup=markdownHeadingMarker start=/\v^#{1,6}/ end=/$/
             \ oneline keepend
             \ contains=markdownHeadingMarker,markdownHeadingText
 
 syn match markdownHeadingMarker /\v^#{1,6}/ contained nextgroup=markdownHeadingText
 syn match markdownHeadingText   /\v%(# *)@<=.*$/ contained
+
+" Setext heading underline
+syn match markdownHeadingMarker /\v^[-=]{4,}$/
 
 " -----------------------------------------------------------------------------
 " List item
