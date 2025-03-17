@@ -25,11 +25,14 @@ syn match markdownListItemMarker /\v^%(\s*)[0-9]+[.)]%(\s+%(\S|$))@=/
 " -----------------------------------------------------------------------------
 " Emphasis
 
-syn region markdownSingleEmphasis start=/\v\z(\*|_)/ end=/\v\z1/ oneline keepend
+syn region markdownSingleEmphasis start=/\v\*/ end=/\v\*/ oneline keepend
+syn region markdownSingleEmphasis start=/\v<_/ end=/\v_>/ oneline keepend
 
-syn region markdownDoubleEmphasis start=/\v\z(\*\*|__)/ end=/\v\z1/ oneline keepend
+syn region markdownDoubleEmphasis start=/\v\*\*/ end=/\v\*\*/ oneline keepend
+syn region markdownDoubleEmphasis start=/\v<__/ end=/\v__>/ oneline keepend
 
-syn region markdownTripleEmphasis start=/\v\z(\*\*\*|___)/ end=/\v\z1/ oneline keepend
+syn region markdownTripleEmphasis start=/\v\*\*\*/ end=/\v\*\*\*/ oneline keepend
+syn region markdownTripleEmphasis start=/\v<___/ end=/\v___>/ oneline keepend
 
 " -----------------------------------------------------------------------------
 " Code
@@ -43,7 +46,8 @@ syn match markdownCodeText   /[^`]*/ contained
             \ nextgroup=markdownCodeMarker,markdownCodeText
 
 
-syn region markdownFencedCodeBlock start=/\v```.*$/ end=/```$/ keepend
+syn region markdownFencedCodeBlock start=/\v```.*$/ end=/```$/
+            \ keepend
             \ transparent
             \ contains=markdownFencedCodeBlockMarker,markdownFencedCodeBlockLanguageName
 
@@ -100,8 +104,6 @@ call <SID>load_fenced_language_syntax_highlight()
 " -----------------------------------------------------------------------------
 " Link
 
-" syn region markdownLink start=/\v\[/ end=/\v\)/ keepend transparent contains=markdownLinkText,markdownLinkUrl
-
 syn region markdownLinkText matchgroup=markdownLinkTextMarker start=/\v\[/ end=/\v\]%(\(.*\))@=/
             \ oneline
 
@@ -115,25 +117,25 @@ syn match markdownLineBreak "\v  +$"
 
 " -----------------------------------------------------------------------------
 
-hi markdownHeadingMarker    ctermfg=202
-hi markdownHeadingText      ctermfg=208
+hi markdownHeadingMarker    ctermfg=202     guifg=#FF5F00
+hi markdownHeadingText      ctermfg=208     guifg=#FF8700
 
-hi markdownListItemMarker   ctermfg=11
+hi markdownListItemMarker   ctermfg=11      guifg=#FFFF00
 
-hi markdownSingleEmphasis   cterm=italic
-hi markdownDoubleEmphasis   cterm=bold
-hi markdownTripleEmphasis   cterm=bold,italic
+hi markdownSingleEmphasis   cterm=italic        gui=italic
+hi markdownDoubleEmphasis   cterm=bold          gui=bold
+hi markdownTripleEmphasis   cterm=bold,italic   gui=bold,italic
 
-hi markdownCodeMarker       ctermfg=5
-hi markdownCodeText         ctermfg=13
+hi markdownCodeMarker       ctermfg=5       guifg=#C000C0
+hi markdownCodeText         ctermfg=13      guifg=#FF00FF
 
-hi markdownFencedCodeBlockMarker        ctermfg=5
-hi markdownFencedCodeBlockLanguageName  ctermfg=13
+hi def link markdownFencedCodeBlockMarker        markdownCodeMarker
+hi def link markdownFencedCodeBlockLanguageName  markdownCodeText
 
-hi markdownLinkText         cterm=underline ctermfg=45
-hi markdownLinkTextMarker   ctermfg=39
-hi markdownLinkUrl          cterm=underline ctermfg=135
-hi markdownLinkUrlMarker    ctermfg=99
+hi markdownLinkText         cterm=underline ctermfg=45  gui=underline guifg=#00D7FF
+hi markdownLinkTextMarker   ctermfg=39  guifg=#00AFFF
+hi markdownLinkUrl          cterm=underline ctermfg=135 gui=underline guifg=#AF5FFF
+hi markdownLinkUrlMarker    ctermfg=99  guifg=#875FFF
 
 hi def link markdownLineBreak Visual
 
