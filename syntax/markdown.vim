@@ -38,7 +38,7 @@ syn region markdownTripleEmphasis start=/\v<___/ end=/\v___>/ oneline keepend
 " Code
 
 syn region markdownCode matchgroup=markdownCodeMarker start=/\v`%(`)@!/ skip=/\\`/ end=/`/
-            \ oneline keepend
+            \ oneline transparent keepend
             \ contains=markdownCodeMarker,markdownCodeText
 
 syn match markdownCodeMarker /`/ contained nextgroup=markdownCodeMarker,markdownCodeText
@@ -79,7 +79,7 @@ function! s:load_fenced_language_syntax_highlight ()
 
                 exe 'syn match markdownFencedCodeBlockLanguageName /\v%(```)@<='. lang .'>/ contained'
 
-                exe 'syn region markdownFencedCodeBlock start=/\v```'. lang .'>%(.*)?$/ end=/```$/ keepend' .
+                exe 'syn region markdownFencedCodeBlock start=/\v^```'. lang .'%(.*)$/ end=/```/ keepend' .
                         \ ' transparent'
                         \ ' contains=markdownFencedCodeBlockMarker,markdownFencedCodeBlockLanguageName,@markdownEmbeddedLanguage_'. lang
             endif
@@ -87,7 +87,7 @@ function! s:load_fenced_language_syntax_highlight ()
             for alias in aliases
                 if alias != lang
                     exe 'syn match markdownFencedCodeBlockLanguageName /\v%(```)@<='. alias .'>/ contained'
-                    exe 'syn region markdownFencedCodeBlock start=/\v```'. alias .'>%(.*)?$/ end=/```$/ keepend' .
+                    exe 'syn region markdownFencedCodeBlock start=/\v%(^```'. alias .'>%(.*))<=/ end=/%(```$)@=/ keepend' .
                             \ ' transparent'
                             \ ' contains=markdownFencedCodeBlockMarker,markdownFencedCodeBlockLanguageName,@markdownEmbeddedLanguage_'. lang
                 endif
