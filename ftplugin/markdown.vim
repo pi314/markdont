@@ -99,7 +99,7 @@ if !(exists('g:markdont_disable_default_key_mappings') && g:markdont_disable_def
                 \ ['n',     'o',            '<Plug>(MarkdontKey[o])'],
                 \ ['i',     '<BS>',         '<Plug>(MarkdontKey[Backspace])'],
                 \ ['i',     '<TAB>',        '<Plug>(MarkdontKey[Tab])'],
-                \ ['i',     '<S-TAB>',      '<Plug>(markdontKey[ShiftTab])'],
+                \ ['i',     '<S-TAB>',      '<Plug>(MarkdontKey[ShiftTab])'],
                 \ ['n',     'cc',           '<Plug>(MarkdontKey[cc])'],
                 \ ['n',     'S',            '<Plug>(MarkdontKey[S])'],
                 \ ]
