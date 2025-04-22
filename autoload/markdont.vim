@@ -299,8 +299,8 @@ function! s:search_refline (line, types) " {{{
             let meet_empty_line = v:false
         endif
 
-        let baseline = strlen(a:line['textleft'])
-        let ref_baseline = strlen(refline['textleft'])
+        let baseline = strlen(a:line['indent'])
+        let ref_baseline = strlen(refline['indent'])
 
         if baseline < ref_baseline
             continue
@@ -319,34 +319,38 @@ function! s:search_refline (line, types) " {{{
 endfunction " }}}
 
 
-function s:is_cursor_in_link ()
+function s:is_cursor_in_link () " {{{
     let line = getline('.')
-    let offset = col('.') - 1
-    let delimeter_filter = 'v:val == "[" || v:val == "]" || v:val == "(" || v:val == ")"'
-    if col('.') == 0 || offset == 0
-        let left = ''
-        let cursor = filter(line[0], delimeter_filter)
-        let right = filter(line[1:], delimeter_filter)[0:3]
-    else
-        let left = filter(line[:offset-1], delimeter_filter)[-3:-1]
-        let cursor = filter(line[offset], delimeter_filter)
-        let right = filter(line[offset+1:], delimeter_filter)[0:2]
-    endif
+    echom matchlist(line, '\v\[(.*)\]\((.*)\)')
+    " let offset = col('.') - 1
+    " let delimeter_filter = 'v:val == "[" || v:val == "]" || v:val == "(" || v:val == ")"'
+    " if col('.') == 0 || offset == 0
+    "     let left = ''
+    "     let cursor = filter(line[0], delimeter_filter)
+    "     let right = filter(line[1:], delimeter_filter)[0:3]
+    " else
+    "     let left = filter(line[:offset-1], delimeter_filter)[-3:-1]
+    "     let cursor = filter(line[offset], delimeter_filter)
+    "     let right = filter(line[offset+1:], delimeter_filter)[0:2]
+    " endif
+    "
+    " echom left .'|'. cursor .'|'. right
+    "
+    " if cursor == '[' && s:startswith(right, ']()')
+    "     let ret = v:true
+    " elseif s:endswith(left, '[') && s:startswith(cursor . right, ']()')
+    "     let ret = v:true
+    " elseif s:endswith(left, '[]') && s:startswith(cursor . right, '()')
+    "     let ret = v:true
+    " elseif s:endswith(left, '[](') && s:startswith(cursor . right, ')')
+    "     let ret = v:true
+    " else
+    "     let ret = v:false
+    " endif
 
-    if cursor == '[' && s:startswith(right, ']()')
-        let ret = v:true
-    elseif s:endswith(left, '[') && s:startswith(cursor . right, ']()')
-        let ret = v:true
-    elseif s:endswith(left, '[]') && s:startswith(cursor . right, '()')
-        let ret = v:true
-    elseif s:endswith(left, '[](') && s:startswith(cursor . right, ')')
-        let ret = v:true
-    else
-        let ret = v:false
-    endif
-
+    let ret = v:false
     return ret
-endfunction
+endfunction " }}}
 
 " -----------------------------------------------------------------------------
 " Logic functions " }}}
@@ -718,16 +722,11 @@ function! markdont#tab () " {{{
     endif
 
     if line['type'] == s:TYPE_UL || line['type'] == s:TYPE_OL
-        let logical_line_start = strlen(line['textleft']) + 1
-        if col('.') <= logical_line_start
-            call markdont#increase_indent()
-            call markdont#move_cursor_to_line_start(0)
-            return ''
-        endif
+        call markdont#increase_indent()
+        return ''
     endif
 
     return "\<TAB>"
-
 endfunction " }}}
 
 
@@ -743,12 +742,7 @@ function! markdont#shift_tab () " {{{
         return ''
     endif
 
-    let logical_line_start = strlen(line['textleft']) + 1
-    if col('.') <= logical_line_start
-        call markdont#decrease_indent()
-        call markdont#move_cursor_to_line_start(0)
-    endif
-
+    call markdont#decrease_indent()
     return ''
 endfunction " }}}
 
