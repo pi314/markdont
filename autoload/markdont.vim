@@ -63,8 +63,8 @@ function! s:is_heading (text) " {{{
 endfunction " }}}
 
 
-function! s:drift_cursor_position (delta) " {{{
-    call cursor(line('.'), col('.') + a:delta)
+function! s:drift_cursor_position (cur_col, delta) " {{{
+    call cursor(line('.'), max([a:cur_col + a:delta, 1]))
 endfunction " }}}
 
 " -----------------------------------------------------------------------------
@@ -112,10 +112,11 @@ function! s:writeline (line) " {{{
     endif
 
     if a:line['origin'] != new_line
+        let cur_col = col('.')
         call setline(a:line['#'], new_line)
         if a:line['#'] == line('.')
             let new_len = s:vwidth(new_line)
-            call s:drift_cursor_position(new_len - line_len)
+            call s:drift_cursor_position(cur_col, new_len - line_len)
         endif
     endif
 endfunction " }}}
