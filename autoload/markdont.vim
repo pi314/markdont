@@ -509,6 +509,9 @@ function! markdont#carriage_return () " {{{
 
     if has_key(line, 'bullet')
         call markdont#set_bullet()
+        let new_line = s:parseline('.')
+        let new_line['indent'] = line['indent']
+        call s:writeline(new_line)
     endif
     call markdont#move_cursor_to_line_start(0)
 endfunction " }}}
