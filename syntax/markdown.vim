@@ -74,7 +74,12 @@ function! s:load_fenced_language_syntax_highlight ()
 
         try
             if !has_key(included, lang)
-                exe 'syn include @markdownEmbeddedLanguage_'. lang .' syntax/'. lang .'.vim'
+                try
+                    exe 'syn include @markdownEmbeddedLanguage_'. lang .' syntax/'. lang .'.vim'
+                catch /E403/
+                    " E403: syntax sync: Line continuations pattern specified twice
+                    " by /usr/share/vim/vim91/syntax/vim.vim:1166
+                endtry
                 unlet! b:current_syntax
 
                 exe 'syn match markdownFencedCodeBlockLanguageName /\v%(```)@<='. lang .'>/ contained'
