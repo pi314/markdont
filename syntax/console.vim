@@ -1,6 +1,6 @@
-syn match markdownConsoleShellCommandLine   /\v^\w+[>$#%❯➜].*$/ contains=markdownConsoleShellName,markdownConsoleShellSymbol
-syn match markdownConsoleShellName          /\v^\w+%([>$#%❯➜])@=/ contained nextgroup=markdownConsoleShellPrompt
-syn match markdownConsoleShellSymbol        /\v%(^\w+)@<=[>$#%❯➜] */ contained nextgroup=markdownConsoleShellCommand
+syn match markdownConsoleShellCommandLine   /\v^\s*\w+[>$#%❯➜].*$/ contains=markdownConsoleShellName,markdownConsoleShellSymbol
+syn match markdownConsoleShellName          /\v^\s*\w+%([>$#%❯➜])@=/ contained nextgroup=markdownConsoleShellPrompt
+syn match markdownConsoleShellSymbol        /\v%(^\s*\w+)@<=[>$#%❯➜] */ contained nextgroup=markdownConsoleShellCommand
 
 syn match markdownConsoleShellCommand       /\v[^ ]+.*$/ contained contains=markdownConsoleShellCommandName,markdownConsoleShellCommandArguments
 syn match markdownConsoleShellCommandName   /\v[^ ]+/ contained nextgroup=markdownConsoleShellCommandArguments

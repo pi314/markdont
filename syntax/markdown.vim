@@ -84,7 +84,7 @@ function! s:load_fenced_language_syntax_highlight ()
 
                 exe 'syn match markdownFencedCodeBlockLanguageName /\v%(```)@<='. lang .'>/ contained'
 
-                exe 'syn region markdownFencedCodeBlock start=/\v^```'. lang .'%(.*)$/ end=/```/ keepend' .
+                exe 'syn region markdownFencedCodeBlock start=/\v^\s*```'. lang .'%(.*)$/ end=/```/ keepend' .
                         \ ' transparent'
                         \ ' contains=markdownFencedCodeBlockMarker,markdownFencedCodeBlockLanguageName,@markdownEmbeddedLanguage_'. lang
             endif
@@ -92,7 +92,7 @@ function! s:load_fenced_language_syntax_highlight ()
             for alias in aliases
                 if alias != lang
                     exe 'syn match markdownFencedCodeBlockLanguageName /\v%(```)@<='. alias .'>/ contained'
-                    exe 'syn region markdownFencedCodeBlock start=/\v%(^```'. alias .'>%(.*))<=/ end=/%(```$)@=/ keepend' .
+                    exe 'syn region markdownFencedCodeBlock start=/\v%(^\s*```'. alias .'>%(.*))<=/ end=/%(```$)@=/ keepend' .
                             \ ' transparent'
                             \ ' contains=markdownFencedCodeBlockMarker,markdownFencedCodeBlockLanguageName,@markdownEmbeddedLanguage_'. lang
                 endif
