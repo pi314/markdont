@@ -6,21 +6,27 @@ endif
 " Heading
 
 " ATX style heading
-syn region markdownHeading matchgroup=markdownHeadingMarker start=/\v^#{1,6}/ end=/$/
+syn region markdownHeading start=/\v^#{1,6}/ end=/$/
             \ oneline keepend
-            \ contains=markdownHeadingMarker,markdownHeadingText
+            \ contains=markdownHeadingMarker
 
-syn match markdownHeadingMarker /\v^#{1,6}/ contained nextgroup=markdownHeadingText
-syn match markdownHeadingText   /\v%(# *)@<=.*$/ contained
+syn match markdownHeadingMarker /\v^#{1,6}/ contained
 
 " Setext heading underline
+syn match markdownHeading /\v^.+\n[-=]{4,}$/ contains=markdownHeadingMarker
 syn match markdownHeadingMarker /\v^[-=]{4,}$/
+
+hi markdownHeading          ctermfg=208 guifg=#FF8700
+hi markdownHeadingMarker    ctermfg=202 guifg=#FF5F00
 
 " -----------------------------------------------------------------------------
 " List item
 
 syn match markdownListItemMarker /\v^%(\s*)[-*+]%(\s+%(\S|$))@=/
 syn match markdownListItemMarker /\v^%(\s*)[0-9]+[.)]%(\s+%(\S|$))@=/
+
+
+hi markdownListItemMarker   ctermfg=11      guifg=#FFFF00
 
 " -----------------------------------------------------------------------------
 " Emphasis
@@ -33,6 +39,10 @@ syn region markdownDoubleEmphasis start=/\v<__/ end=/\v__>/ oneline keepend
 
 syn region markdownTripleEmphasis start=/\v\*\*\*/ end=/\v\*\*\*/ oneline keepend
 syn region markdownTripleEmphasis start=/\v<___/ end=/\v___>/ oneline keepend
+
+hi markdownSingleEmphasis   cterm=italic        gui=italic
+hi markdownDoubleEmphasis   cterm=bold          gui=bold
+hi markdownTripleEmphasis   cterm=bold,italic   gui=bold,italic
 
 " -----------------------------------------------------------------------------
 " Code
@@ -53,6 +63,13 @@ syn region markdownFencedCodeBlock start=/\v```.*$/ end=/```$/
 
 syn match markdownFencedCodeBlockMarker /```/ contained
 syn match markdownFencedCodeBlockMarker /\v%(```)@<=\w+/ contained
+
+hi def link markdownFencedCodeBlockMarker        markdownCodeMarker
+hi def link markdownFencedCodeBlockLanguageName  markdownCodeText
+
+hi markdownCodeMarker       ctermfg=5       guifg=#C000C0
+hi markdownCodeText         ctermfg=13      guifg=#FF00FF
+
 
 if !exists('g:markdown_fenced_languages')
   let g:markdown_fenced_languages = []
@@ -109,39 +126,29 @@ call <SID>load_fenced_language_syntax_highlight()
 " -----------------------------------------------------------------------------
 " Link
 
-syn region markdownLinkText matchgroup=markdownLinkTextMarker start=/\v\[/ end=/\v\]%(\(.*\))@=/
+syn region markdownLinkText matchgroup=markdownLinkTextMarker
+            \ start=/\v\[/
+            \ end=/\v\]%(\(.*\))@=/
             \ oneline
 
-syn region markdownLinkUrl matchgroup=markdownLinkUrlMarker start=/\v%(\[.*\])@<=\(/ end=/\v\)/
+syn region markdownLinkUrl matchgroup=markdownLinkUrlMarker
+            \ start=/\v%(\[.*\])@<=\(/
+            \ end=/\v\)/
             \ oneline
 
-" -----------------------------------------------------------------------------
-" Misc
-
-syn match markdownLineBreak "\v  +$"
-
-" -----------------------------------------------------------------------------
-
-hi markdownHeadingMarker    ctermfg=202     guifg=#FF5F00
-hi markdownHeadingText      ctermfg=208     guifg=#FF8700
-
-hi markdownListItemMarker   ctermfg=11      guifg=#FFFF00
-
-hi markdownSingleEmphasis   cterm=italic        gui=italic
-hi markdownDoubleEmphasis   cterm=bold          gui=bold
-hi markdownTripleEmphasis   cterm=bold,italic   gui=bold,italic
-
-hi markdownCodeMarker       ctermfg=5       guifg=#C000C0
-hi markdownCodeText         ctermfg=13      guifg=#FF00FF
-
-hi def link markdownFencedCodeBlockMarker        markdownCodeMarker
-hi def link markdownFencedCodeBlockLanguageName  markdownCodeText
 
 hi markdownLinkText         cterm=underline ctermfg=45  gui=underline guifg=#00D7FF
 hi markdownLinkTextMarker   ctermfg=39  guifg=#00AFFF
 hi markdownLinkUrl          cterm=underline ctermfg=135 gui=underline guifg=#AF5FFF
 hi markdownLinkUrlMarker    ctermfg=99  guifg=#875FFF
 
+" -----------------------------------------------------------------------------
+" Misc
+
+syn match markdownLineBreak "\v  +$"
+
 hi def link markdownLineBreak Visual
+
+" -----------------------------------------------------------------------------
 
 let b:current_syntax = 'markdont'
